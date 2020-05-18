@@ -1,3 +1,5 @@
-// app.get('/user', auth.authenticate(), function (req, res) {
-//   res.json(users[req.user.id]);
-// });
+const userRouter = require('express').Router();
+
+userRouter.post('/', (req, res) => UserController.create(req, res));
+
+module.exports = userRouter;

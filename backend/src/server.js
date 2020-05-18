@@ -1,8 +1,11 @@
 require('dotenv').config();
 
+// Server setup
 const express = require('express');
 const bodyParser = require('body-parser');
-const auth = require('./auth')();
+
+// Routes
+const userRouter = require('./routes/User');
 
 const { SERVER_PORT, JWT_SECRET } = process.env;
 
@@ -32,12 +35,10 @@ class UgradeServer {
     this.app.use(bodyParser.urlencoded({ extended: true }));
   }
 
-  session() {
-    auth.initialize();
-  }
+  session() {}
 
   routes() {
-    return this;
+    this.app.use('/user', userRouter);
   }
 }
 
