@@ -1,2 +1,2 @@
 # ugrade
-Complete scholar management system
+System to handle Distance Learning
