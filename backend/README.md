@@ -1,8 +1,8 @@
 # Entities creation order
 
-[] Auth
-[] Register
-[] Database
+- [ ] Auth
+- [ ] Register
+- [ ] Database
 
 1. School 🏫
 2. Course 📌
