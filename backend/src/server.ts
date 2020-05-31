@@ -16,9 +16,9 @@ class UgradeServer {
 
   async start() {
     try {
-      await db.sync();
+      await db.sync({ force: true });
     } catch (err) {
-      console.log('>> Failed syncing with database: ' + err);
+      console.log('🗃 Failed syncing with database: ' + err);
       return;
     }
 
@@ -27,7 +27,7 @@ class UgradeServer {
     this.routes();
 
     this.app.listen(SERVER_PORT, () => {
-      console.log('>> Server running at', SERVER_PORT);
+      console.log('🚀 Server running at', SERVER_PORT);
     });
   }
 
