@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 // Server setup
 import express from 'express';
 import bodyParser from 'body-parser';
