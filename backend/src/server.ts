@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 
 // Routes
 import userRouter from './routes/User';
+import roleRouter from './routes/Role';
 import db from './database/connection';
 import authMiddlware from './middlewares/auth';
 
@@ -16,9 +17,11 @@ class UgradeServer {
 
   async start() {
     try {
+      require('./models');
       await db.sync({ force: true });
+      console.log('🗃 Models synced');
     } catch (err) {
-      console.log('🗃 Failed syncing with database: ' + err);
+      console.log('🗃 Failed syncing models with database: ' + err);
       return;
     }
 
@@ -42,6 +45,7 @@ class UgradeServer {
 
   routes() {
     this.app.use('/user', userRouter);
+    this.app.use('/role', roleRouter);
   }
 }
 
