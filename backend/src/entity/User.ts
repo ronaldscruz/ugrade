@@ -1,18 +1,14 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import WithTimestamp from "./WithTimestamp";
 
 @Entity()
-export class User {
+export class User extends WithTimestamp {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({ nullable: false })
+  email: string;
 
-    @Column()
-    firstName: string;
-
-    @Column()
-    lastName: string;
-
-    @Column()
-    age: number;
-
+  @Column({ nullable: false })
+  password: string;
 }
