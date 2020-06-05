@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import Server from "./server";
 
-import server from './server';
+const server = new Server(4500);
+
 server.start();

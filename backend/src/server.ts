@@ -1,52 +1,38 @@
-// Server setup
-import express from 'express';
-import bodyParser from 'body-parser';
+import "reflect-metadata";
 
-// Routes
-import userRouter from './routes/User';
-import roleRouter from './routes/Role';
-import db from './database/connection';
-import authMiddlware from './middlewares/auth';
+import express from "express";
+import { createConnection } from "typeorm";
 
-const { SERVER_PORT = '4500', JWT_SECRET = '' } = process.env;
+import routes from "./routes";
 
-class UgradeServer {
+class Server {
   app = express();
-  serverPort = SERVER_PORT;
-  sessionSecret = JWT_SECRET;
+  port: number;
+
+  constructor(port: number) {
+    this.port = port;
+
+    this.loadRoutes();
+    this.loadParsers();
+  }
+
+  loadRoutes() {
+    this.app.use(routes);
+  }
+
+  loadParsers() {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+  }
 
   async start() {
     try {
-      require('./models');
-      await db.sync({ force: true });
-      console.log('🗃 Models synced');
+      await createConnection();
+      this.app.listen(this.port);
     } catch (err) {
-      console.log('🗃 Failed syncing models with database: ' + err);
-      return;
+      console.log("Failed starting server/database. " + err);
     }
-
-    this.parsers();
-    this.middlewares();
-    this.routes();
-
-    this.app.listen(SERVER_PORT, () => {
-      console.log('🚀 Server running at', SERVER_PORT);
-    });
-  }
-
-  parsers() {
-    this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(bodyParser.json());
-  }
-
-  middlewares() {
-    this.app.use(authMiddlware);
-  }
-
-  routes() {
-    this.app.use('/user', userRouter);
-    this.app.use('/role', roleRouter);
   }
 }
 
-export default new UgradeServer();
+export default Server;
