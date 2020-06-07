@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
 import WithTimestamp from "./WithTimestamp";
 
 @Entity()
