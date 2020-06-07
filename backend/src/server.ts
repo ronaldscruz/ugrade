@@ -1,8 +1,6 @@
 import "reflect-metadata";
 
 import express from "express";
-import { createConnection } from "typeorm";
-
 import routes from "./routes";
 
 class Server {
@@ -11,9 +9,6 @@ class Server {
 
   constructor(port: number) {
     this.port = port;
-
-    this.loadRoutes();
-    this.loadParsers();
   }
 
   loadRoutes() {
@@ -25,13 +20,8 @@ class Server {
     this.app.use(express.urlencoded({ extended: true }));
   }
 
-  async start() {
-    try {
-      await createConnection();
-      this.app.listen(this.port);
-    } catch (err) {
-      console.log("Failed starting server/database. " + err);
-    }
+  start() {
+    this.app.listen(this.port);
   }
 }
 
