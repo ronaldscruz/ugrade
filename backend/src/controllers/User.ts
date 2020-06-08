@@ -1,15 +1,18 @@
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { getRepository, Repository } from "typeorm";
 
+import { Role } from "../entity/Role";
 import { User } from "../entity/User";
 
 class UserController {
   userRepository: Repository<User>;
+  roleRepository: Repository<Role>;
 
   constructor() {
     this.userRepository = getRepository(User);
+    this.roleRepository = getRepository(Role);
   }
 
   signIn = async (req: Request, res: Response) => {
@@ -58,6 +61,12 @@ class UserController {
 
       user.password = await bcrypt.hash(user.password, 10);
 
+      const devRole = await this.roleRepository.find({
+        where: { name: "Developer" },
+      });
+
+      user.roles = [devRole];
+
       const created = await this.userRepository.save(user);
       res.status(200).send({ email: created.email });
     } catch (err) {
@@ -67,7 +76,7 @@ class UserController {
 
   all = async (req: Request, res: Response) => {
     try {
-      const users = await this.userRepository.find();
+      const users = await this.userRepository.find({ relations: ["roles"] });
       res.status(200).send(users);
     } catch (err) {
       res.status(400).send({ error: "Failed fetching users. " + err });
@@ -79,7 +88,11 @@ class UserController {
       const id = req.params?.id;
 
       if (id) {
-        const user = await this.userRepository.findOne({ where: { id } });
+        const user = await this.userRepository.findOne({
+          where: { id },
+          relations: ["roles"],
+        });
+
         res.status(200).send(user);
       } else {
         res.status(400).send({ error: "Required param ID not provided. " });
@@ -92,12 +105,14 @@ class UserController {
   update = async (req: Request, res: Response) => {
     try {
       const user = { ...req.body };
+
       await this.userRepository.update(user.id, user);
 
       const updated = await this.userRepository.findOne({
         where: { id: user.id },
       });
-      res.status(200).send(updated);
+
+      res.status(200).send({ email: updated!.email });
     } catch (err) {
       res.status(400).send({ error: "Failed updating user. " + err });
     }
@@ -108,8 +123,8 @@ class UserController {
       const id = req.params?.id;
 
       if (id) {
-        const user = await this.userRepository.delete(id);
-        res.status(200).send(user);
+        await this.userRepository.delete(id);
+        res.status(200).send({ id });
       } else {
         res.status(400).send({ error: "Required param ID not provided. " });
       }
