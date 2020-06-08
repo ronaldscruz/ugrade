@@ -6,10 +6,13 @@ import routes from "./routes";
 
 class Server {
   app = express();
-  port: number;
+  port: number | string;
 
-  constructor(port: number) {
+  constructor(port: number | string) {
     this.port = port;
+
+    this.loadParsers();
+    this.loadRoutes();
   }
 
   loadRoutes() {
@@ -22,6 +25,7 @@ class Server {
   }
 
   start() {
+    console.log("🚀 Server running at " + this.port);
     this.app.listen(this.port);
   }
 }

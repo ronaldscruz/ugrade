@@ -1,12 +1,16 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 
 import { User } from "../entity/User";
 
 class UserController {
-  userRepository = getRepository(User);
+  userRepository: Repository<User>;
 
-  async create(req: Request, res: Response) {
+  constructor() {
+    this.userRepository = getRepository(User);
+  }
+
+  create = async (req: Request, res: Response) => {
     try {
       const user = { ...req.body };
       const created = await this.userRepository.save(user);
@@ -14,18 +18,18 @@ class UserController {
     } catch (err) {
       res.status(400).send({ error: "Failed creating user. " + err });
     }
-  }
+  };
 
-  async all(req: Request, res: Response) {
+  all = async (req: Request, res: Response) => {
     try {
       const users = await this.userRepository.find();
       res.status(200).send(users);
     } catch (err) {
       res.status(400).send({ error: "Failed fetching users. " + err });
     }
-  }
+  };
 
-  async one(req: Request, res: Response) {
+  one = async (req: Request, res: Response) => {
     try {
       const id = req.params?.id;
 
@@ -38,9 +42,9 @@ class UserController {
     } catch (err) {
       res.status(400).send({ error: "Failed fetching user. " + err });
     }
-  }
+  };
 
-  async update(req: Request, res: Response) {
+  update = async (req: Request, res: Response) => {
     try {
       const user = { ...req.body };
       await this.userRepository.update(user.id, user);
@@ -52,9 +56,9 @@ class UserController {
     } catch (err) {
       res.status(400).send({ error: "Failed updating user. " + err });
     }
-  }
+  };
 
-  async delete(req: Request, res: Response) {
+  delete = async (req: Request, res: Response) => {
     try {
       const id = req.params?.id;
 
@@ -67,7 +71,7 @@ class UserController {
     } catch (err) {
       res.status(400).send({ error: "Failed removing user. " + err });
     }
-  }
+  };
 }
 
 export default new UserController();
