@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { getRepository, Repository } from "typeorm";
+import { getRepository, Repository, In } from "typeorm";
 
 import { Role } from "../entity/Role";
 import { User } from "../entity/User";
@@ -59,16 +59,28 @@ class UserController {
     try {
       let user = { ...req.body };
 
-      user.password = await bcrypt.hash(user.password, 10);
+      if (!user.roles) {
+        res.status(400).send({ error: "Please, set roles for this user." });
+        return;
+      }
 
-      const devRole = await this.roleRepository.find({
-        where: { name: "Developer" },
+      const userRoles = await this.roleRepository.find({
+        where: {
+          id: In(user.roles),
+        },
       });
 
-      user.roles = [devRole];
+      if (!user.roles || user.roles.length !== userRoles.length) {
+        res.status(400).send({ error: "Invalid role found." });
+        return;
+      }
+
+      user.roles = userRoles;
+      user.password = await bcrypt.hash(user.password, 10);
 
       const created = await this.userRepository.save(user);
-      res.status(200).send({ email: created.email });
+
+      res.status(200).send(created);
     } catch (err) {
       res.status(400).send({ error: "Failed creating user. " + err });
     }

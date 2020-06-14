@@ -14,13 +14,16 @@ export class User extends WithTimestamp {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string;
 
   @Column({ nullable: false, select: false })
   password: string;
 
-  @ManyToMany((type) => Role)
+  @ManyToMany((type) => Role, {
+    nullable: false,
+    cascade: true,
+  })
   @JoinTable()
-  roles: Role[];
+  roles!: Role[];
 }

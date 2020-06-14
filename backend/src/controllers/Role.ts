@@ -15,7 +15,7 @@ class RoleController {
       let role = { ...req.body };
 
       const created = await this.roleRepository.save(role);
-      res.status(200).send({ email: created.email });
+      res.status(200).send({ id: created.id, name: created.name });
     } catch (err) {
       res.status(400).send({ error: "Failed creating role. " + err });
     }
